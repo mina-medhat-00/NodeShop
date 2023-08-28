@@ -12,29 +12,29 @@ const app = express();
 // Database
 const dbConnection = require("./config/database");
 const categoryRoute = require("./routes/categoryRoute");
+const subCategoryRoute = require("./routes/subCategoryRoute");
 
 dbConnection();
 // Middleware
 app.use(express.json());
 
-if (process.env.NODE_ENV == "development") {
+if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
 
 // Mount Routes
 app.use("/api/v1/categories", categoryRoute);
+app.use("/api/v1/subcategories", subCategoryRoute);
 app.all("*", (req, res, next) => {
   // Create error and send to error handling middleware
-  // const err = new Error(`Can't find this route: ${req.originalUrl}`);
-  // next(err.message);
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });
 
 // Global error-handling middleware
 app.use(globalError);
 
-const PORT = process.env.PORT;
+const { PORT } = process.env;
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
