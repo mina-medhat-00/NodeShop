@@ -6,6 +6,8 @@ const {
   getSubCategories,
   updateSubCategory,
   deleteSubCategory,
+  setCategoryIdToBody,
+  createFilterObj,
 } = require("../services/subCategoryService");
 const {
   createSubCategoryValidator,
@@ -14,12 +16,13 @@ const {
   deleteSubCategoryValidator,
 } = require("../utils/validator/subCategoryValidator");
 
-const router = express.Router();
+// mergeParams: access parameters on other routers
+const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  .post(createSubCategoryValidator, createSubCategory)
-  .get(getSubCategories);
+  .post(setCategoryIdToBody, createSubCategoryValidator, createSubCategory)
+  .get(createFilterObj, getSubCategories);
 router
   .route("/:id")
   .get(getSubCategoryValidator, getSubCategory)
