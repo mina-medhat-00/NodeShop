@@ -1,45 +1,26 @@
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
+const ApiFeatures = require("../utils/apiFeatures");
+
 const Product = require("../models/productModel");
 
 // @description   Get list of products
 // @route         POST /api/v1/products
 // @access        Public
 exports.getProducts = asyncHandler(async (req, res) => {
-  // 1.Filtering
-  const queryStringObj = { ...req.query };
-  const excludesFields = ["page", "sort", "limit", "fields"];
-  excludesFields.forEach((field) => delete queryStringObj[field]);
-
-  // Apply filtration
-  let queryStr = JSON.stringify(queryStringObj);
-  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-  // 2.Pagination
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 50;
-  const skip = (page - 1) * limit;
-
   // Build query
-  let mongooseQuery = Product.find(JSON.parse(queryStr))
-    .skip(skip)
-    .limit(limit)
-    .populate({ path: "category", select: "name -_id" });
-
-  // 3.Sorting
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
-    mongooseQuery = mongooseQuery.sort(sortBy);
-    console.log(sortBy);
-  } else {
-    mongooseQuery = mongooseQuery.sort("-createAt");
-  }
+  const apiFeatures = new ApiFeatures(Product.find(), req.query)
+    .paginate()
+    .filter()
+    .search()
+    .limitFields()
+    .sort();
 
   // Execute query
-  const products = await mongooseQuery;
+  const products = await apiFeatures.mongooseQuery;
 
-  res.status(200).json({ results: products.length, page, data: products });
+  res.status(200).json({ results: products.length, data: products });
 });
 
 // @description   Get specific category by id
