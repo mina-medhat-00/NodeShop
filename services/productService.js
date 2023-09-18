@@ -7,18 +7,38 @@ const Product = require("../models/productModel");
 // @route         POST /api/v1/products
 // @access        Public
 exports.getProducts = asyncHandler(async (req, res) => {
-  console.log(req.query);
+  // 1.Filtering
+  const queryStringObj = { ...req.query };
+  const excludesFields = ["page", "sort", "limit", "fields"];
+  excludesFields.forEach((field) => delete queryStringObj[field]);
 
+  // Apply filtration
+  let queryStr = JSON.stringify(queryStringObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  // 2.Pagination
   const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 5;
+  const limit = req.query.limit * 1 || 50;
   const skip = (page - 1) * limit;
-  const products = await Product.find({
-    price: req.query.price,
-    ratingsAverage: req.query.ratingsAverage,
-  })
+
+  // Build query
+  let mongooseQuery = Product.find(JSON.parse(queryStr))
     .skip(skip)
     .limit(limit)
-    .populate({ path: "category", select: "name" });
+    .populate({ path: "category", select: "name -_id" });
+
+  // 3.Sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    mongooseQuery = mongooseQuery.sort(sortBy);
+    console.log(sortBy);
+  } else {
+    mongooseQuery = mongooseQuery.sort("-createAt");
+  }
+
+  // Execute query
+  const products = await mongooseQuery;
+
   res.status(200).json({ results: products.length, page, data: products });
 });
 
