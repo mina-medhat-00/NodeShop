@@ -1,4 +1,3 @@
-const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const ApiFeatures = require("../utils/apiFeatures");
@@ -30,24 +29,12 @@ exports.getBrands = asyncHandler(async (req, res) => {
 // @description   Get specific brand by id
 // @route         GET /api/v1/brands/:id
 // @access        Public
-exports.getBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const brand = await Brand.findById(id);
-
-  if (!brand) {
-    return next(new ApiError(`No brand for this id ${id}`, 404));
-  }
-  res.status(200).json({ data: brand });
-});
+exports.getBrand = factory.getOne(Brand);
 
 // @description   create brand
 // @route         POST /api/v1/brands
 // @access        Private
-exports.createBrand = asyncHandler(async (req, res) => {
-  const { name } = req.body;
-  const brand = await Brand.create({ name, slug: slugify(name) });
-  res.status(201).json({ data: brand });
-});
+exports.createBrand = factory.createOne(Brand);
 
 // @description   Update specific brand
 // @route         PUT /api/v1/brands/:id
