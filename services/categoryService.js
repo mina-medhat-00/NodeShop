@@ -22,7 +22,7 @@ exports.getCategories = asyncHandler(async (req, res) => {
   // Execute query
   const { mongooseQuery, paginationResult } = features;
   const categories = await mongooseQuery;
-  
+
   res
     .status(200)
     .json({ results: categories.length, paginationResult, data: categories });
@@ -53,21 +53,7 @@ exports.createCategory = asyncHandler(async (req, res) => {
 // @description   Update specific category
 // @route         PUT /api/v1/categories/:id
 // @access        Private
-exports.updateCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name } = req.body;
-
-  const category = await Category.findOneAndUpdate(
-    { _id: id },
-    { name, slug: slugify(name) },
-    { new: true }
-  );
-
-  if (!category) {
-    return next(new ApiError(`No category for this id ${id}`, 404));
-  }
-  res.status(200).json({ data: category });
-});
+exports.updateCategory = factory.updateOne(Category);
 
 // @description   Delete specific category
 // @route         DELETE /api/v1/categories/:id
