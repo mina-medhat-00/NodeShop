@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
@@ -5,11 +7,9 @@ const morgan = require("morgan");
 dotenv.config({ path: "config.env" });
 const ApiError = require("./utils/apiError");
 const globalError = require("./middleware/errorMiddleware");
-
-const app = express();
-
-// Database
 const dbConnection = require("./config/database");
+
+dbConnection();
 
 // Routes
 const categoryRoute = require("./routes/categoryRoute");
@@ -17,9 +17,11 @@ const subCategoryRoute = require("./routes/subCategoryRoute");
 const brandRoute = require("./routes/brandRoute");
 const productRoute = require("./routes/productRoute");
 
-dbConnection();
+const app = express();
+
 // Middleware
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "uploads")));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -32,7 +34,6 @@ app.use("/api/v1/subcategories", subCategoryRoute);
 app.use("/api/v1/brands", brandRoute);
 app.use("/api/v1/products", productRoute);
 app.all("*", (req, res, next) => {
-  // Create error and send to error handling middleware
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });
 
