@@ -1,12 +1,14 @@
 const express = require("express");
 
 const router = express.Router();
+
 const {
   getBrandValidator,
   createBrandValidator,
   updateBrandValidator,
   deleteBrandValidator,
 } = require("../utils/validator/brandValidator");
+
 const {
   getBrands,
   getBrand,

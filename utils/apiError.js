@@ -1,4 +1,4 @@
-// @description   Responsible for operation errors (errors that can be predicted)
+// @description   Responsible for operation errors (predictable errors)
 
 class ApiError extends Error {
   constructor(message, statusCode) {

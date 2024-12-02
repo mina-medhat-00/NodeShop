@@ -1,12 +1,14 @@
 const express = require("express");
 
 const router = express.Router();
+
 const {
   getProductValidator,
   createProductValidator,
   updateProductValidator,
   deleteProductValidator,
 } = require("../utils/validator/productValidator");
+
 const {
   getProducts,
   getProduct,
