@@ -7,19 +7,22 @@ const factory = require("./handlersFactory");
 const User = require("../models/userModel");
 
 // Upload Single Image
-exports.uploadBrandImage = uploadSingleImage("image");
+exports.uploadUserImage = uploadSingleImage("profilePic");
 
 // Image Processing
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   const filename = `user-${uuidv4()}-${Date.now()}.jpeg`;
+  // profile picture is optional
+  if (req.file) {
+    await sharp(req.file.buffer)
+      .resize(600, 600)
+      .toFormat("jpeg")
+      .jpeg({ quality: 95 })
+      .toFile(`uploads/users/${filename}`);
 
-  await sharp(req.file.buffer)
-    .resize(600, 600)
-    .toFormat("jpeg")
-    .jpeg({ quality: 95 })
-    .toFile(`uploads/users/${filename}`);
-
-  req.body.profilePic = filename;
+    req.body.profilePic = filename;
+  }
+  
   next();
 });
 

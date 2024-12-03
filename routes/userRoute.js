@@ -2,13 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 
-// const {
-//   getUserValidator,
-//   createUserValidator,
-//   updateUserValidator,
-//   deleteUserValidator,
-// } = require("../utils/validator/userValidator");
-
 const {
   getUsers,
   getUser,
