@@ -1,5 +1,5 @@
 const slugify = require("slugify");
-const { body, check } = require("express-validator");
+const { check } = require("express-validator");
 
 const validatorMiddleware = require("../../middleware/validatorMiddleware");
 const User = require("../../models/userModel");
@@ -45,5 +45,22 @@ exports.signupValidator = [
   check("confirmPassword")
     .notEmpty()
     .withMessage("password confirmation required"),
+  validatorMiddleware,
+];
+
+exports.loginValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("email is required")
+    .isEmail()
+    .withMessage("invalid email format"),
+
+  check("password")
+    .notEmpty()
+    .withMessage("password is required")
+    .isLength({ min: 8 })
+    .withMessage("passwords should be between 8 and 32 characters length")
+    .isLength({ max: 32 })
+    .withMessage("passwords should be between 8 and 32 characters length"),
   validatorMiddleware,
 ];

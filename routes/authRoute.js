@@ -3,12 +3,16 @@ const express = require("express");
 const router = express.Router();
 
 // routing from validator
-const { signupValidator } = require("../utils/validator/authValidator");
+const {
+  signupValidator,
+  loginValidator,
+} = require("../utils/validator/authValidator");
 
 // routing from services
-const { signup } = require("../services/authService");
+const { signup, login } = require("../services/authService");
 
 router.route("/signup").post(signupValidator, signup);
+router.route("/login").post(loginValidator, login);
 
 // router
 //   .route("/:id")
