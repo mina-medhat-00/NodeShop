@@ -1,5 +1,7 @@
 const slugify = require("slugify");
 const { body, check } = require("express-validator");
+const bcrypt = require("bcryptjs");
+
 const validatorMiddleware = require("../../middleware/validatorMiddleware");
 const User = require("../../models/userModel");
 
@@ -67,6 +69,38 @@ exports.updateUserValidator = [
     req.body.slug = slugify(val);
     return true;
   }),
+  validatorMiddleware,
+];
+
+exports.changePasswordValidator = [
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("current password is required"),
+  body("confirmPassword")
+    .notEmpty()
+    .withMessage("password confirmation is required"),
+  body("password")
+    .notEmpty()
+    .withMessage("new password is required")
+    .custom(async (val, { req }) => {
+      // Verify user password
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        throw new Error("invalid user id");
+      }
+      const isCorrectPassword = await bcrypt.compare(
+        req.body.currentPassword,
+        user.password
+      );
+      if (!isCorrectPassword) {
+        throw new Error("current password is incorrect");
+      }
+      // Verify password confirmation
+      if (val !== req.body.confirmPassword) {
+        throw new Error("password and password confirmation don't match");
+      }
+      return true;
+    }),
   validatorMiddleware,
 ];
 

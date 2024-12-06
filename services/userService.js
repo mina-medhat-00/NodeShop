@@ -1,7 +1,9 @@
 const sharp = require("sharp");
 const asyncHandler = require("express-async-handler");
 const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcryptjs");
 
+const ApiError = require("../utils/apiError");
 const { uploadSingleImage } = require("../middleware/uploadImageMiddleware");
 const factory = require("./handlersFactory");
 const User = require("../models/userModel");
@@ -22,7 +24,6 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
     req.body.profilePic = filename;
   }
-  
   next();
 });
 
@@ -44,7 +45,47 @@ exports.createUser = factory.createOne(User);
 // @description   Update specific user
 // @route         PUT /api/v1/users/:id
 // @access        Private
-exports.updateUser = factory.updateOne(User);
+exports.updateUser = asyncHandler(async (req, res, next) => {
+  const document = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      slug: req.body.slug,
+      email: req.body.email,
+      phone: req.body.phone,
+      profilePic: req.body.profilePic,
+      role: req.body.role,
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!document) {
+    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  }
+  res.status(200).json({ data: document });
+});
+
+// @description   Change user password
+// @route         PUT /api/v1/users/changePassword/:id
+// @access        Private
+exports.changePassword = asyncHandler(async (req, res, next) => {
+  const document = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      password: await bcrypt.hash(req.body.password, 12),
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!document) {
+    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  }
+  res.status(200).json({ data: document });
+});
 
 // @description   Delete specific user
 // @route         DELETE /api/v1/users/:id
