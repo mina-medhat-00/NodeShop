@@ -48,7 +48,7 @@ exports.signupValidator = [
   validatorMiddleware,
 ];
 
-exports.loginValidator = [
+exports.signinValidator = [
   check("email")
     .notEmpty()
     .withMessage("email is required")

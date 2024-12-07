@@ -29,7 +29,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
 // @description   Login
 // @route         POST /api/v1/auth/login
 // @access        Public
-exports.login = asyncHandler(async (req, res, next) => {
+exports.signin = asyncHandler(async (req, res, next) => {
   // check for correct password and if user exists
   const user = await User.findOne({ email: req.body.email });
   if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
@@ -42,7 +42,6 @@ exports.login = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Authenticate user with token
-// @access        Public
 exports.auth = asyncHandler(async (req, res, next) => {
   // 1. check if token exists
   let token;
@@ -79,7 +78,17 @@ exports.auth = asyncHandler(async (req, res, next) => {
       );
     }
   }
-
   req.user = user;
   next();
 });
+
+// @description   Allow specific roles route access
+exports.allow = (...roles) =>
+  asyncHandler(async (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ApiError("this route requires admin or manager privileges", 403)
+      );
+    }
+    next();
+  });

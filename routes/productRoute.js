@@ -2,6 +2,8 @@ const express = require("express");
 
 const router = express.Router();
 
+const authService = require("../services/authService");
+
 const {
   getProductValidator,
   createProductValidator,
@@ -23,6 +25,8 @@ router
   .route("/")
   .get(getProducts)
   .post(
+    authService.auth,
+    authService.allow("admin", "manager"),
     uploadProductImages,
     resizeProductImages,
     createProductValidator,
@@ -33,11 +37,18 @@ router
   .route("/:id")
   .get(getProductValidator, getProduct)
   .put(
+    authService.auth,
+    authService.allow("admin", "manager"),
     uploadProductImages,
     resizeProductImages,
     updateProductValidator,
     updateProduct
   )
-  .delete(deleteProductValidator, deleteProduct);
+  .delete(
+    authService.auth,
+    authService.allow("admin"),
+    deleteProductValidator,
+    deleteProduct
+  );
 
 module.exports = router;
