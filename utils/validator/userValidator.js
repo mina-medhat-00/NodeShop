@@ -76,7 +76,7 @@ exports.changePasswordValidator = [
   body("currentPassword")
     .notEmpty()
     .withMessage("current password is required"),
-  body("confirmPassword")
+  body("confirmNewPassword")
     .notEmpty()
     .withMessage("password confirmation is required"),
   body("password")
@@ -96,7 +96,7 @@ exports.changePasswordValidator = [
         throw new Error("current password is incorrect");
       }
       // Verify password confirmation
-      if (val !== req.body.confirmPassword) {
+      if (val !== req.body.confirmNewPassword) {
         throw new Error("password and password confirmation don't match");
       }
       return true;

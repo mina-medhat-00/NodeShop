@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
       required: [true, "password is required"],
       minlength: [8, "password cant be less than 8 characters long"],
     },
+    changePasswordAt: Date,
     phone: String,
     profilePic: String,
     active: {
@@ -31,7 +32,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "manager", "admin"],
       default: "user",
     },
   },

@@ -40,3 +40,46 @@ exports.login = asyncHandler(async (req, res, next) => {
   // return response to client
   res.status(200).json({ data: user, token });
 });
+
+// @description   Authenticate user with token
+// @access        Public
+exports.auth = asyncHandler(async (req, res, next) => {
+  // 1. check if token exists
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+  if (!token) {
+    return next(new ApiError("login to use the following features", 401));
+  }
+  // 2. verify token
+  const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  // 3. check if user exists
+  const user = await User.findById(decoded.userID);
+  if (!user) {
+    return next(
+      new ApiError(
+        "the token's user no longer exist, login again is required",
+        401
+      )
+    );
+  }
+  // 4. check for password change
+  if (user.changePasswordAt) {
+    const changePasswordTimestamp = parseInt(user.changePasswordAt / 1000, 10);
+    if (changePasswordTimestamp > decoded.iat) {
+      return next(
+        new ApiError(
+          "recent password change has occurred, please login again",
+          401
+        )
+      );
+    }
+  }
+
+  req.user = user;
+  next();
+});

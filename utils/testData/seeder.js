@@ -35,7 +35,7 @@ const destroyData = async () => {
   }
 };
 
-//to run the previous script: node seeder.js -d or node seeder.js -i
+// run the script: node seeder.js -d or node seeder.js -i
 if (process.argv[2] === "-i") {
   insertData();
 } else if (process.argv[2] === "-d") {
