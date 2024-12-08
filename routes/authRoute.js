@@ -9,15 +9,10 @@ const {
 } = require("../utils/validator/authValidator");
 
 // routing from services
-const { signup, signin } = require("../services/authService");
+const { signup, signin, forgetPassword } = require("../services/authService");
 
-router.route("/signup").post(signupValidator, signup);
-router.route("/signin").post(signinValidator, signin);
-
-// router
-//   .route("/:id")
-//   .get(getUserValidator, getUser)
-//   .put(uploadUserImage, resizeImage, updateUserValidator, updateUser)
-//   .delete(deleteUserValidator, deleteUser);
+router.post("/signup", signupValidator, signup);
+router.post("/signin", signinValidator, signin);
+router.post("/forgetPassword", forgetPassword);
 
 module.exports = router;

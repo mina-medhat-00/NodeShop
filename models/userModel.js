@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema(
       minlength: [8, "password cant be less than 8 characters long"],
     },
     changePasswordAt: Date,
+    resetPasswordCode: String,
+    resetPasswordCodeExpiry: Date,
+    resetPasswordVerify: Boolean,
     phone: String,
     profilePic: String,
     active: {

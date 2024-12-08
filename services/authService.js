@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
@@ -92,3 +93,25 @@ exports.allow = (...roles) =>
     }
     next();
   });
+
+// @description   Forget password feature
+exports.forgetPassword = asyncHandler(async (req, res, next) => {
+  // 1. check if user exists
+  const user = await User.findOne({ email: req.body.email });
+  if (!user)
+    return next(
+      new ApiError(`the following email doesn't exist ${req.body.email}`, 404)
+    );
+  // 2. create a reset password code
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const resetCodeHash = crypto
+    .createHash("sha256")
+    .update(resetCode)
+    .digest("hex");
+  user.resetPasswordCode = resetCodeHash;
+  // password reset codes expire in 10 minutes
+  user.resetPasswordCodeExpiry = Date.now() + 10 * 60 * 1000;
+  user.resetPasswordVerify = false;
+  await user.save();
+  // 3. send reset code via email
+});
