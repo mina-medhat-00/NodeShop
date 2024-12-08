@@ -6,11 +6,7 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const User = require("../models/userModel");
 const sendEmail = require("../utils/sendEmails");
-
-const createToken = (payload) =>
-  jwt.sign({ userID: payload }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRE_TIME,
-  });
+const createToken = require("../utils/createToken");
 
 // @description   Authenticate user with token
 exports.auth = asyncHandler(async (req, res, next) => {

@@ -7,6 +7,7 @@ const ApiError = require("../utils/apiError");
 const { uploadSingleImage } = require("../middleware/uploadImageMiddleware");
 const factory = require("./handlersFactory");
 const User = require("../models/userModel");
+const createToken = require("../utils/createToken");
 
 // Upload Single Image
 exports.uploadUserImage = uploadSingleImage("profilePic");
@@ -94,9 +95,28 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
 exports.deleteUser = factory.deleteOne(User);
 
 // @description   Get logged user data
-// @route         GET /api/v1/users/getUserData
+// @route         GET /api/v1/users/getLoggedUser
 // @access        Private/Protect
-exports.getUserData = asyncHandler((req, res, next) => {
+exports.getLoggedUser = asyncHandler((req, res, next) => {
   req.params.id = req.user._id;
   next();
+});
+
+// @description   Change logged user password
+// @route         GET /api/v1/users/changeLoggedUserPassword
+// @access        Private/Protect
+exports.changeLoggedUserPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      password: await bcrypt.hash(req.body.password, 12),
+      changePasswordAt: Date.now(),
+    },
+    {
+      new: true,
+    }
+  );
+
+  const token = createToken(req.body.password, 12);
+  res.status(200).json({ data: user, token });
 });

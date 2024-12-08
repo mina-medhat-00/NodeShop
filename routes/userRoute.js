@@ -21,13 +21,20 @@ const {
   deleteUser,
   uploadUserImage,
   resizeImage,
-  getUserData,
+  getLoggedUser,
+  changeLoggedUserPassword,
 } = require("../services/userService");
 
 // add auth route
 router.use(authService.auth, authService.allow("admin"));
 
-router.get("/getUserData", authService.auth, getUserData, getUser);
+router.get("/getUserData", authService.auth, getLoggedUser, getUser);
+
+router.put(
+  "/changeLoggedUserPassword",
+  authService.auth,
+  changeLoggedUserPassword
+);
 
 router.put("/changePassword/:id", changePasswordValidator, changePassword);
 
