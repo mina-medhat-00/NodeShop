@@ -94,7 +94,7 @@ exports.createProductValidator = [
           const checker = (target, arr) => target.every((v) => arr.includes(v));
           if (!checker(value, subCategoriesIdsInDB)) {
             return Promise.reject(
-              new Error(`Subcategories don't belong to category`)
+              new Error(`Subcategories do not belong to category`)
             );
           }
         }

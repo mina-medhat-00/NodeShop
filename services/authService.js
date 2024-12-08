@@ -7,41 +7,10 @@ const ApiError = require("../utils/apiError");
 const User = require("../models/userModel");
 const sendEmail = require("../utils/sendEmails");
 
-const generateToken = (payload) =>
+const createToken = (payload) =>
   jwt.sign({ userID: payload }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRE_TIME,
   });
-
-// @description   Signup
-// @route         POST /api/v1/auth/signup
-// @access        Public
-exports.signup = asyncHandler(async (req, res, next) => {
-  // create user
-  const user = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  // generate token
-  const token = generateToken(user._id);
-  // return response to client
-  res.status(201).json({ data: user, token });
-});
-
-// @description   Login
-// @route         POST /api/v1/auth/signin
-// @access        Public
-exports.signin = asyncHandler(async (req, res, next) => {
-  // check for correct password and if user exists
-  const user = await User.findOne({ email: req.body.email });
-  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
-    return next(new ApiError("invalid login credentials", 401));
-  }
-  // generate token
-  const token = generateToken(user._id);
-  // return response to client
-  res.status(200).json({ data: user, token });
-});
 
 // @description   Authenticate user with token
 exports.auth = asyncHandler(async (req, res, next) => {
@@ -95,6 +64,37 @@ exports.allow = (...roles) =>
     next();
   });
 
+// @description   Signup
+// @route         POST /api/v1/auth/signup
+// @access        Public
+exports.signup = asyncHandler(async (req, res, next) => {
+  // create user
+  const user = await User.create({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+  });
+  // generate token
+  const token = createToken(user._id);
+  // return response to client
+  res.status(201).json({ data: user, token });
+});
+
+// @description   Login
+// @route         POST /api/v1/auth/signin
+// @access        Public
+exports.signin = asyncHandler(async (req, res, next) => {
+  // check for correct password and if user exists
+  const user = await User.findOne({ email: req.body.email });
+  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+    return next(new ApiError("invalid login credentials", 401));
+  }
+  // generate token
+  const token = createToken(user._id);
+  // return response to client
+  res.status(200).json({ data: user, token });
+});
+
 // @description   Forget password feature
 // @route         POST /api/v1/auth/forgetPassword
 // @access        Public
@@ -103,7 +103,7 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user)
     return next(
-      new ApiError(`the following email doesn't exist ${req.body.email}`, 404)
+      new ApiError(`the following email does not exist ${req.body.email}`, 404)
     );
 
   // 2. create a reset password code
@@ -164,4 +164,25 @@ exports.verifyResetPassword = asyncHandler(async (req, res, next) => {
   user.resetPasswordVerify = true;
   await user.save();
   res.status(200).json({ status: "success" });
+});
+
+// @description   Reset user password
+// @route         PUT /api/v1/auth/resetPassword
+// @access        Public
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  // 1. check if user exists
+  if (!user) return next(new ApiError("email is not registered", 404));
+  // 2. check for correct reset code
+  if (!user.resetPasswordVerify)
+    return next(new ApiError("reset password unverified"));
+  // update user password
+  user.password = req.body.password;
+  user.resetPasswordCode = undefined;
+  user.resetPasswordCodeExpiry = undefined;
+  user.resetPasswordVerify = undefined;
+  await user.save();
+  // 3. create new token
+  const token = createToken(user._id);
+  req.status(200).json({ token });
 });

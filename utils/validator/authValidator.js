@@ -38,7 +38,7 @@ exports.signupValidator = [
     .withMessage("passwords should be between 8 and 32 characters length")
     .custom((password, { req }) => {
       if (password !== req.body.confirmPassword)
-        throw new Error("password and password confirmation aren't equal");
+        throw new Error("password and password confirmation are not equal");
       return true;
     }),
 

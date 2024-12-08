@@ -76,9 +76,6 @@ exports.changePasswordValidator = [
   body("currentPassword")
     .notEmpty()
     .withMessage("current password is required"),
-  body("confirmNewPassword")
-    .notEmpty()
-    .withMessage("password confirmation is required"),
   body("password")
     .notEmpty()
     .withMessage("new password is required")
@@ -101,6 +98,9 @@ exports.changePasswordValidator = [
       }
       return true;
     }),
+  body("confirmNewPassword")
+    .notEmpty()
+    .withMessage("password confirmation is required"),
   validatorMiddleware,
 ];
 
