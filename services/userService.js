@@ -92,3 +92,11 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
 // @route         DELETE /api/v1/users/:id
 // @access        Private
 exports.deleteUser = factory.deleteOne(User);
+
+// @description   Get logged user data
+// @route         GET /api/v1/users/getUserData
+// @access        Private/Protect
+exports.getUserData = asyncHandler((req, res, next) => {
+  req.params.id = req.user._id;
+  next();
+});

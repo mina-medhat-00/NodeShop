@@ -24,12 +24,13 @@ const {
 
 router.use("/:categoryId/subcategories", subcategoriesRoute);
 
+// add auth route
+router.use(authService.auth, authService.allow("admin", "manager"));
+
 router
   .route("/")
   .get(getCategories)
   .post(
-    authService.auth,
-    authService.allow("admin", "manager"),
     uploadCategoryImage,
     resizeImage,
     createCategoryValidator,
@@ -40,8 +41,6 @@ router
   .route("/:id")
   .get(getCategoryValidator, getCategory)
   .put(
-    authService.auth,
-    authService.allow("admin", "manager"),
     uploadCategoryImage,
     resizeImage,
     updateCategoryValidator,

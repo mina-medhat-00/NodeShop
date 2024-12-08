@@ -22,26 +22,18 @@ const {
 // mergeParams: access parameters on other routers
 const router = express.Router({ mergeParams: true });
 
+// add auth route
+router.use(authService.auth, authService.allow("admin", "manager"));
+
 router
   .route("/")
-  .post(
-    authService.auth,
-    authService.allow("admin", "manager"),
-    setCategoryIdToBody,
-    createSubCategoryValidator,
-    createSubCategory
-  )
+  .post(setCategoryIdToBody, createSubCategoryValidator, createSubCategory)
   .get(createFilterObj, getSubCategories);
 
 router
   .route("/:id")
   .get(getSubCategoryValidator, getSubCategory)
-  .put(
-    authService.auth,
-    authService.allow("admin", "manager"),
-    updateSubCategoryValidator,
-    updateSubCategory
-  )
+  .put(updateSubCategoryValidator, updateSubCategory)
   .delete(
     authService.auth,
     authService.allow("admin"),

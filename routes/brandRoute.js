@@ -21,29 +21,18 @@ const {
   resizeImage,
 } = require("../services/brandService");
 
+// add auth route
+router.use(authService.auth, authService.allow("admin", "manager"));
+
 router
   .route("/")
   .get(getBrands)
-  .post(
-    authService.auth,
-    authService.allow("admin", "manager"),
-    uploadBrandImage,
-    resizeImage,
-    createBrandValidator,
-    createBrand
-  );
+  .post(uploadBrandImage, resizeImage, createBrandValidator, createBrand);
 
 router
   .route("/:id")
   .get(getBrandValidator, getBrand)
-  .put(
-    authService.auth,
-    authService.allow("admin", "manager"),
-    uploadBrandImage,
-    resizeImage,
-    updateBrandValidator,
-    updateBrand
-  )
+  .put(uploadBrandImage, resizeImage, updateBrandValidator, updateBrand)
   .delete(
     authService.auth,
     authService.allow("admin"),

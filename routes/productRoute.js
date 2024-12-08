@@ -21,12 +21,13 @@ const {
   resizeProductImages,
 } = require("../services/productService");
 
+// add auth route
+router.use(authService.auth, authService.allow("admin", "manager"));
+
 router
   .route("/")
   .get(getProducts)
   .post(
-    authService.auth,
-    authService.allow("admin", "manager"),
     uploadProductImages,
     resizeProductImages,
     createProductValidator,
@@ -37,8 +38,6 @@ router
   .route("/:id")
   .get(getProductValidator, getProduct)
   .put(
-    authService.auth,
-    authService.allow("admin", "manager"),
     uploadProductImages,
     resizeProductImages,
     updateProductValidator,
