@@ -65,10 +65,32 @@ exports.createUserValidator = [
 
 exports.updateUserValidator = [
   check("id").isMongoId().withMessage("invalid user id"),
+
   body("name").custom((val, { req }) => {
     req.body.slug = slugify(val);
     return true;
   }),
+
+  check("email")
+    .notEmpty()
+    .withMessage("email is required")
+    .isEmail()
+    .withMessage("invalid email format")
+    .custom(async (val) => {
+      const user = await User.findOne({ email: val });
+      if (user) {
+        throw new Error("email address already in use");
+      }
+    }),
+
+  check("phone")
+    .optional()
+    .isMobilePhone("ar-EG")
+    .withMessage("only egyptian phone numbers allowed"),
+
+  check("profilePic").optional(),
+
+  check("role").optional(),
   validatorMiddleware,
 ];
 
@@ -106,5 +128,31 @@ exports.changePasswordValidator = [
 
 exports.deleteUserValidator = [
   check("id").isMongoId().withMessage("invalid user id"),
+  validatorMiddleware,
+];
+
+// Validation functions for the logged user features
+exports.updateLoggedUserValidator = [
+  body("name").custom((val, { req }) => {
+    req.body.slug = slugify(val);
+    return true;
+  }),
+
+  check("email")
+    .notEmpty()
+    .withMessage("email is required")
+    .isEmail()
+    .withMessage("invalid email format")
+    .custom(async (val) => {
+      const user = await User.findOne({ email: val });
+      if (user) {
+        throw new Error("email address already in use");
+      }
+    }),
+
+  check("phone")
+    .optional()
+    .isMobilePhone("ar-EG")
+    .withMessage("only egyptian phone numbers allowed"),
   validatorMiddleware,
 ];

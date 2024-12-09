@@ -47,7 +47,7 @@ exports.createUser = factory.createOne(User);
 // @route         PUT /api/v1/users/:id
 // @access        Private
 exports.updateUser = asyncHandler(async (req, res, next) => {
-  const document = await User.findByIdAndUpdate(
+  const updatedUser = await User.findByIdAndUpdate(
     req.params.id,
     {
       name: req.body.name,
@@ -62,10 +62,10 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     }
   );
 
-  if (!document) {
-    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  if (!updatedUser) {
+    return next(new ApiError(`No user for this id ${req.params.id}`, 404));
   }
-  res.status(200).json({ data: document });
+  res.status(200).json({ data: updatedUser });
 });
 
 // @description   Change user password
@@ -119,4 +119,20 @@ exports.changeLoggedUserPassword = asyncHandler(async (req, res, next) => {
 
   const token = createToken(req.body.password, 12);
   res.status(200).json({ data: user, token });
+});
+
+// @description   Update logged user data (password,role,active are not included)
+// @route         GET /api/v1/users/updateLoggedUserData
+// @access        Private/Protect
+exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+    },
+    { new: true }
+  );
+  res.status(200).json({ data: updatedUser });
 });

@@ -10,6 +10,7 @@ const {
   updateUserValidator,
   changePasswordValidator,
   deleteUserValidator,
+  updateLoggedUserValidator,
 } = require("../utils/validator/userValidator");
 
 const {
@@ -23,26 +24,25 @@ const {
   resizeImage,
   getLoggedUser,
   changeLoggedUserPassword,
+  updateLoggedUserData,
 } = require("../services/userService");
 
-// add auth route
-router.use(authService.auth, authService.allow("admin"));
+// Logged User
+// add auth route for token authentication
+router.use(authService.auth);
 
-router.get("/getUserData", authService.auth, getLoggedUser, getUser);
+router.get("/getMe", getLoggedUser, getUser);
+router.put("/changeMyPassword", changeLoggedUserPassword);
+router.put("/updateMe", updateLoggedUserValidator, updateLoggedUserData);
 
-router.put(
-  "/changeLoggedUserPassword",
-  authService.auth,
-  changeLoggedUserPassword
-);
-
+// Admin User
+// add auth route for admin privileges
+router.use(authService.allow("admin"));
 router.put("/changePassword/:id", changePasswordValidator, changePassword);
-
 router
   .route("/")
   .get(getUsers)
   .post(uploadUserImage, resizeImage, createUserValidator, createUser);
-
 router
   .route("/:id")
   .get(getUserValidator, getUser)
