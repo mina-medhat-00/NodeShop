@@ -95,7 +95,7 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
 exports.deleteUser = factory.deleteOne(User);
 
 // @description   Get logged user data
-// @route         GET /api/v1/users/getLoggedUser
+// @route         GET /api/v1/users/getMe
 // @access        Private/Protect
 exports.getLoggedUser = asyncHandler((req, res, next) => {
   req.params.id = req.user._id;
@@ -103,7 +103,7 @@ exports.getLoggedUser = asyncHandler((req, res, next) => {
 });
 
 // @description   Change logged user password
-// @route         GET /api/v1/users/changeLoggedUserPassword
+// @route         GET /api/v1/users/changeMyPassword
 // @access        Private/Protect
 exports.changeLoggedUserPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
@@ -122,7 +122,7 @@ exports.changeLoggedUserPassword = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Update logged user data (password,role,active are not included)
-// @route         GET /api/v1/users/updateLoggedUserData
+// @route         GET /api/v1/users/updateMe
 // @access        Private/Protect
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
@@ -135,4 +135,12 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
     { new: true }
   );
   res.status(200).json({ data: updatedUser });
+});
+
+// @description   Deactivate logged user account
+// @route         GET /api/v1/users/deleteMe
+// @access        Private/Protect
+exports.deleteLoggedUser = asyncHandler(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+  res.status(204).json({ status: "deactivation successful" });
 });

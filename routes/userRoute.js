@@ -25,6 +25,7 @@ const {
   getLoggedUser,
   changeLoggedUserPassword,
   updateLoggedUserData,
+  deleteLoggedUser,
 } = require("../services/userService");
 
 // Logged User
@@ -34,6 +35,7 @@ router.use(authService.auth);
 router.get("/getMe", getLoggedUser, getUser);
 router.put("/changeMyPassword", changeLoggedUserPassword);
 router.put("/updateMe", updateLoggedUserValidator, updateLoggedUserData);
+router.put("/deleteMe", deleteLoggedUser);
 
 // Admin User
 // add auth route for admin privileges
