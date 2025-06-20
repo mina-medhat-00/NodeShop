@@ -61,7 +61,7 @@ export const allow = (...roles) =>
   });
 
 // @description   Signup
-// @route         POST /api/v1/auth/signup
+// @route         POST /api/auth/signup
 // @access        Public
 export const signup = asyncHandler(async (req, res, next) => {
   // create user
@@ -77,7 +77,7 @@ export const signup = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Login
-// @route         POST /api/v1/auth/signin
+// @route         POST /api/auth/signin
 // @access        Public
 export const signin = asyncHandler(async (req, res, next) => {
   // check for correct password and if user exists
@@ -92,7 +92,7 @@ export const signin = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Forget password feature
-// @route         POST /api/v1/auth/forgetPassword
+// @route         POST /api/auth/forgetPassword
 // @access        Public
 export const forgetPassword = asyncHandler(async (req, res, next) => {
   // 1. check if user exists
@@ -142,7 +142,7 @@ export const forgetPassword = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Verify reset password code
-// @route         POST /api/v1/auth/verifyResetPassword
+// @route         POST /api/auth/verifyResetPassword
 // @access        Public
 export const verifyResetPassword = asyncHandler(async (req, res, next) => {
   const resetCodeHash = crypto
@@ -163,7 +163,7 @@ export const verifyResetPassword = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Reset user password
-// @route         PUT /api/v1/auth/resetPassword
+// @route         PUT /api/auth/resetPassword
 // @access        Public
 export const resetPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
@@ -182,4 +182,3 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   const token = createToken(user._id);
   req.status(200).json({ token });
 });
-

@@ -1,13 +1,13 @@
-import sharp from"sharp";
-import asyncHandler from"express-async-handler";
+import sharp from "sharp";
+import asyncHandler from "express-async-handler";
 import { v4 as uuidv4 } from "uuid";
-import bcrypt from"bcryptjs";
+import bcrypt from "bcryptjs";
 
-import ApiError from"../utils/apiError.js";
-import { uploadSingleImage } from"../middleware/uploadImageMiddleware.js";
-import {getOne,getAll,createOne,deleteOne} from"./handlersFactory.js";
-import User from"../models/userModel.js";
-import createToken from"../utils/createToken.js";
+import ApiError from "../utils/apiError.js";
+import { uploadSingleImage } from "../middleware/uploadImageMiddleware.js";
+import { getOne, getAll, createOne, deleteOne } from "./handlersFactory.js";
+import User from "../models/userModel.js";
+import createToken from "../utils/createToken.js";
 
 // Upload Single Image
 export const uploadUserImage = uploadSingleImage("profilePic");
@@ -29,22 +29,22 @@ export const resizeImage = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Get list of users
-// @route         POST /api/v1/users
+// @route         POST /api/users
 // @access        Private
 export const getUsers = getAll(User);
 
 // @description   Get specific user by id
-// @route         GET /api/v1/users/:id
+// @route         GET /api/users/:id
 // @access        Private
 export const getUser = getOne(User);
 
 // @description   create brand
-// @route         POST /api/v1/users
+// @route         POST /api/users
 // @access        Private
 export const createUser = createOne(User);
 
 // @description   Update specific user
-// @route         PUT /api/v1/users/:id
+// @route         PUT /api/users/:id
 // @access        Private
 export const updateUser = asyncHandler(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
@@ -69,7 +69,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Change user password
-// @route         PUT /api/v1/users/changePassword/:id
+// @route         PUT /api/users/changePassword/:id
 // @access        Private
 export const changePassword = asyncHandler(async (req, res, next) => {
   const document = await User.findByIdAndUpdate(
@@ -90,12 +90,12 @@ export const changePassword = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Delete specific user
-// @route         DELETE /api/v1/users/:id
+// @route         DELETE /api/users/:id
 // @access        Private
 export const deleteUser = deleteOne(User);
 
 // @description   Get logged user data
-// @route         GET /api/v1/users/getMe
+// @route         GET /api/users/getMe
 // @access        Private/Protect
 export const getLoggedUser = asyncHandler((req, res, next) => {
   req.params.id = req.user._id;
@@ -103,7 +103,7 @@ export const getLoggedUser = asyncHandler((req, res, next) => {
 });
 
 // @description   Change logged user password
-// @route         GET /api/v1/users/changeMyPassword
+// @route         GET /api/users/changeMyPassword
 // @access        Private/Protect
 export const changeLoggedUserPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
@@ -122,7 +122,7 @@ export const changeLoggedUserPassword = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Update logged user data (password,role,active are not included)
-// @route         GET /api/v1/users/updateMe
+// @route         GET /api/users/updateMe
 // @access        Private/Protect
 export const updateLoggedUserData = asyncHandler(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
@@ -138,7 +138,7 @@ export const updateLoggedUserData = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Deactivate logged user account
-// @route         GET /api/v1/users/deleteMe
+// @route         GET /api/users/deleteMe
 // @access        Private/Protect
 export const deleteLoggedUser = asyncHandler(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user._id, { active: false });

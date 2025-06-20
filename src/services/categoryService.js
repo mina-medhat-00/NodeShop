@@ -1,10 +1,16 @@
-import sharp from"sharp";
-import asyncHandler from"express-async-handler";
+import sharp from "sharp";
+import asyncHandler from "express-async-handler";
 import { v4 as uuidv4 } from "uuid";
 
-import { uploadSingleImage } from"../middleware/uploadImageMiddleware.js";
-import {getOne,getAll,createOne,updateOne,deleteOne} from"./handlersFactory.js";
-import Category from"../models/categoryModel.js";
+import { uploadSingleImage } from "../middleware/uploadImageMiddleware.js";
+import {
+  getOne,
+  getAll,
+  createOne,
+  updateOne,
+  deleteOne,
+} from "./handlersFactory.js";
+import Category from "../models/categoryModel.js";
 
 // Upload Single Image
 export const uploadCategoryImage = uploadSingleImage("image");
@@ -24,26 +30,26 @@ export const resizeImage = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Get list of categories
-// @route         POST /api/v1/categories
+// @route         POST /api/categories
 // @access        Public
 export const getCategories = getAll(Category);
 
 // @description   Get specific category by id
-// @route         GET /api/v1/categories/:id
+// @route         GET /api/categories/:id
 // @access        Public
 export const getCategory = getOne(Category);
 
 // @description   create category
-// @route         POST /api/v1/categories
+// @route         POST /api/categories
 // @access        Private
 export const createCategory = createOne(Category);
 
 // @description   Update specific category
-// @route         PUT /api/v1/categories/:id
+// @route         PUT /api/categories/:id
 // @access        Private
 export const updateCategory = updateOne(Category);
 
 // @description   Delete specific category
-// @route         DELETE /api/v1/categories/:id
+// @route         DELETE /api/categories/:id
 // @access        Private
 export const deleteCategory = deleteOne(Category);

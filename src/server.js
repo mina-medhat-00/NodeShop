@@ -18,17 +18,16 @@ import authRoute from "./routes/authRoute.js";
 
 dbConnection();
 
-const app = express();
-// Middleware
-app.use(express.json());
-// app.use(express.static(path.join(__dirname, "uploads")));
-
 // Define __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const app = express();
+
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "uploads")));
-app.use(express.static(path.join(__dirname, "uploads")));
+// Global error-handling middleware
+app.use(globalError);
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -36,22 +35,19 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Mount Routes
-app.use("/api/v1/categories", categoryRoute);
-app.use("/api/v1/subcategories", subCategoryRoute);
-app.use("/api/v1/brands", brandRoute);
-app.use("/api/v1/products", productRoute);
-app.use("/api/v1/users", userRoute);
-app.use("/api/v1/auth", authRoute);
+app.use("/api/categories", categoryRoute);
+app.use("/api/subcategories", subCategoryRoute);
+app.use("/api/brands", brandRoute);
+app.use("/api/products", productRoute);
+app.use("/api/users", userRoute);
+app.use("/api/auth", authRoute);
 app.all("*", (req, res, next) => {
   next(new ApiError(`Cannot find this route: ${req.originalUrl}`, 400));
 });
 
-// Global error-handling middleware
-app.use(globalError);
-
 const { PORT } = process.env;
 const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on ${PORT}`);
 });
 
 // Event handle rejections outside express

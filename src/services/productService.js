@@ -1,10 +1,16 @@
-import sharp from"sharp";
-import asyncHandler from"express-async-handler";
+import sharp from "sharp";
+import asyncHandler from "express-async-handler";
 import { v4 as uuidv4 } from "uuid";
 
-import { uploadMultipleImages } from"../middleware/uploadImageMiddleware.js";
-import {getOne,getAll,createOne,updateOne,deleteOne} from"./handlersFactory.js";
-import Product from"../models/productModel.js";
+import { uploadMultipleImages } from "../middleware/uploadImageMiddleware.js";
+import {
+  getOne,
+  getAll,
+  createOne,
+  updateOne,
+  deleteOne,
+} from "./handlersFactory.js";
+import Product from "../models/productModel.js";
 
 export const uploadProductImages = uploadMultipleImages([
   {
@@ -49,26 +55,26 @@ export const resizeProductImages = asyncHandler(async (req, res, next) => {
 });
 
 // @description   Get list of products
-// @route         POST /api/v1/products
+// @route         POST /api/products
 // @access        Public
 export const getProducts = getAll(Product);
 
 // @description   Get specific category by id
-// @route         GET /api/v1/products/:id
+// @route         GET /api/products/:id
 // @access        Public
 export const getProduct = getOne(Product);
 
 // @description   create product
-// @route         POST /api/v1/products
+// @route         POST /api/products
 // @access        Private
 export const createProduct = createOne(Product);
 
 // @description   Update specific product
-// @route         PUT /api/v1/products/:id
+// @route         PUT /api/products/:id
 // @access        Private
 export const updateProduct = updateOne(Product);
 
 // @description   Delete specific product
-// @route         DELETE /api/v1/products/:id
+// @route         DELETE /api/products/:id
 // @access        Private
 export const deleteProduct = deleteOne(Product);
