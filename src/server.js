@@ -3,6 +3,7 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import "dotenv/config";
+import mongoose from "mongoose";
 
 import ApiError from "./utils/apiError.js";
 import globalError from "./middleware/errorMiddleware.js";
@@ -16,7 +17,14 @@ import productRoute from "./routes/productRoute.js";
 import userRoute from "./routes/userRoute.js";
 import authRoute from "./routes/authRoute.js";
 
-dbConnection();
+mongoose
+  .connect(process.env.DB_URI)
+  .then((conn) => {
+    console.log(`Database Connected: ${conn.connection.host}`);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
 // Define __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
